@@ -6,12 +6,18 @@ on:
     paths:
       - "src/**"
       - "requirements.txt"
+      - "pyproject.toml"
+      - "setup.cfg"
+      - "setup.py"
       - ".github/workflows/install-and-unpack.yml"
   push:
     branches: ["main", "dev"]
     paths:
       - "src/**"
       - "requirements.txt"
+      - "pyproject.toml"
+      - "setup.cfg"
+      - "setup.py"
       - ".github/workflows/install-and-unpack.yml"
 
 jobs:
