@@ -1,0 +1,72 @@
+name: Install and unpack validation
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "src/**"
+      - "requirements.txt"
+      - ".github/workflows/install-and-unpack.yml"
+  push:
+    branches: ["main", "dev"]
+    paths:
+      - "src/**"
+      - "requirements.txt"
+      - ".github/workflows/install-and-unpack.yml"
+
+jobs:
+  install-from-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Install all dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip check
+
+      - name: Validate runtime imports
+        run: |
+          python -c "import src.proxy_app.request_logger"
+          python -c "import src.rotator_library.credential_manager"
+
+  unpack-and-install:
+    runs-on: ubuntu-latest
+    needs: install-from-source
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Create source archive
+        run: |
+          git archive --format=tar.gz --output /tmp/llm-api-key-proxy.tar.gz HEAD
+
+      - name: Unpack source archive
+        run: |
+          mkdir -p /tmp/llm-api-key-proxy
+          tar -xzf /tmp/llm-api-key-proxy.tar.gz -C /tmp/llm-api-key-proxy
+
+      - name: Install all from unpacked source
+        run: |
+          cd /tmp/llm-api-key-proxy
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip check
+
+      - name: Validate unpacked runtime imports
+        run: |
+          cd /tmp/llm-api-key-proxy
+          python -c "import src.proxy_app.request_logger"
+          python -c "import src.rotator_library.credential_manager"
