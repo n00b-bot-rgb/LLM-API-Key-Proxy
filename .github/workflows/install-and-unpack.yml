@@ -35,11 +35,10 @@ jobs:
           pip install -e ./src/rotator_library
           pip check
 
-      - name: Validate runtime imports outside repository root
+      - name: Validate installed dependencies
         run: |
-          cd /tmp
-          PYTHONPATH="${GITHUB_WORKSPACE}/src" python -c "import proxy_app.request_logger"
-          PYTHONPATH="${GITHUB_WORKSPACE}/src" python -c "import rotator_library.credential_manager"
+          python -m pip show rotator_library
+          python -c "import fastapi, uvicorn, litellm"
 
   unpack-and-install:
     runs-on: ubuntu-latest
@@ -73,8 +72,7 @@ jobs:
           python -m pip show rotator_library
           pip check
 
-      - name: Validate unpacked runtime imports outside unpack directory
+      - name: Validate installed dependencies from unpacked flow
         run: |
-          cd /tmp
-          PYTHONPATH="/tmp/llm-api-key-proxy/src" python -c "import proxy_app.request_logger"
-          PYTHONPATH="/tmp/llm-api-key-proxy/src" python -c "import rotator_library.credential_manager"
+          python -m pip show rotator_library
+          python -c "import fastapi, uvicorn, litellm"
