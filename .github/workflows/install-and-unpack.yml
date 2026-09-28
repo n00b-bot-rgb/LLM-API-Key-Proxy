@@ -74,5 +74,6 @@ jobs:
 
       - name: Validate installed dependencies from unpacked flow
         run: |
+          cd /tmp/llm-api-key-proxy
           python -m pip show rotator_library
           python -c "import fastapi, uvicorn, litellm"
